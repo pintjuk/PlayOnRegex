@@ -782,24 +782,24 @@ FULL_SIMP_TAC (list_ss ++ pred_setSimps.PRED_SET_ss) [SHIFT_M_DEF, RLANGUAGE_OF_
   ]
 ]);
 
+
+
+(* Repetedly shifting regex by a substring of 
+   a word in its right language puts it in a 
+   state such that the rest of the word is in 
+   its language *)
 val  LANG_OF_FOLD_SHIFT_MREG_THM = store_thm (
   "LANG_OF_FOLD_SHIFT_MREG_THM",
   ``!l1 l2 R.
     l1 IN r_language_of_m (FOLDL (shift F) R l2) =
     (l2 ++ l1) IN r_language_of_m (R)``,
 
-  Ho_Rewrite.REWRITE_TAC [boolTheory.EQ_IMP_THM, FORALL_AND_THM] >> (
-    STRIP_TAC>>
     Induct_on `l2`>>
     (
       SIMP_TAC list_ss [FOLDL]
     )>>
-    REPEAT STRIP_TAC>>
-    `l2 ++ l1 ∈ r_language_of_m (shift F R h) ` by(
-        METIS_TAC [LANG_OF_SHIFT_MREG_THM2]
-    )>>
-    METIS_TAC [LANG_OF_SHIFT_MREG_THM1]
-  )
+    METIS_TAC [LANG_OF_SHIFT_MREG_THM2, 
+               LANG_OF_SHIFT_MREG_THM1]
 );
 
 val ex_regex_def = Define
@@ -845,24 +845,24 @@ EVAL ``acceptM ((MRep (MSeq
 EVAL ``acceptM (MSym T 1) [1]``;
 
 
+(*******************************************)
+(* acceptM of marked regex accepts    *)
+(* exactly thoughts words in the      *)
+(* langugae of the unmarked regex     *)
+(*******************************************)
 val ACCEPT_M_LANGUAGE_THM = store_thm (
 "ACCEPT_M_LANGUAGE_THM",
 ``!r w. acceptM (MARK_REG r) w <=> w IN (language_of r)``,
-  `!t h r.
-     final (FOLDL (shift F) (shift T (MARK_REG r) h) t) ⇔
-     h::t IN language_of r ` suffices_by (
-    REPEAT STRIP_TAC >>
-    Cases_on `w`>>(
-        ASM_SIMP_TAC list_ss [ACCEPT_M_DEF,LANG_OF_EMPTY_REG_THM, UNMARK_MARK_THM]
-    )
-  )>>
-  REWRITE_TAC [LANG_OF_FINAL_REG_THM, MARK_REG_SHIFT_LANG_THM1]>>
-  `!l1 l2 R.
-    l1 IN r_language_of_m (FOLDL (shift F) R l2) =
-    (l2++l1) IN r_language_of_m (R)` by (
-      SIMP_TAC std_ss [LANG_OF_FOLD_SHIFT_MREG_THM]
-  )>>
-  REV_FULL_SIMP_TAC list_ss []
+  REPEAT STRIP_TAC >>
+  Cases_on `w`>>(
+     SIMP_TAC list_ss [
+     ACCEPT_M_DEF,
+     LANG_OF_EMPTY_REG_THM,
+     UNMARK_MARK_THM,
+     LANG_OF_FINAL_REG_THM, 
+     MARK_REG_SHIFT_LANG_THM1,
+     LANG_OF_FOLD_SHIFT_MREG_THM]
+  )
 );
 
  (* ======================================= *)
