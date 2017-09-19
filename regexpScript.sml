@@ -381,42 +381,49 @@ val MARKED_M_DEF = Define
    (marked (MSeq p q) = (marked p) \/ (marked q )) /\
    (marked (MRep r)   = marked r )`;
 
+(* Unmarking inverts marking,
+   BUT NOT THE OTHER WAY AROUND. *)
 val UNMARK_MARK_THM = store_thm(
 "UNMARK_MARK_THM",
 ``! R. UNMARK_REG (MARK_REG R) = R``,
   Induct >> ASM_SIMP_TAC std_ss [MARK_REG_DEF, UNMARK_REG_DEF]
 );
 
+(* Right language of marked regex with no markes set is empty *)
 val MARK_UNMARK_EPTY_R_LANG_THM = store_thm(
 "MARK_UNMARK_EPTY_R_LANG_THM",
 ``!R. r_language_of_m (MARK_REG (UNMARK_REG R)) = {}``,
-Induct >>  FULL_SIMP_TAC (list_ss ++ pred_setSimps.PRED_SET_ss) [GSPEC_F, RLANGUAGE_OF_M_DEF, MARK_REG_DEF, UNMARK_REG_DEF]>>
-`{fstPrt ++ sndPrt | F} = ∅` by (
-  REWRITE_TAC [EXTENSION]>>
-  FULL_SIMP_TAC (list_ss ++ pred_setSimps.PRED_SET_ss) []
-));
-
-
-
-val LANG_UNMACK_SHIFT_THM = store_thm (
-"LANG_UNMACK_SHIFT_THM",
-``!R B h. language_of (UNMARK_REG (shift B R h)) = language_of ( UNMARK_REG R)``,
-Induct >> ASM_SIMP_TAC (list_ss ++ pred_setSimps.PRED_SET_ss) [LANGUAGE_OF_def,IN_UNION,RLANGUAGE_OF_M_DEF, SHIFT_M_DEF, MARK_REG_DEF, UNMARK_REG_DEF]
+  Induct >>(
+    ASM_SIMP_TAC (list_ss ++ pred_setSimps.PRED_SET_ss)
+         [EXTENSION, RLANGUAGE_OF_M_DEF, MARK_REG_DEF, UNMARK_REG_DEF]
+  )
 );
 
+(* Shifting does not affect the structure of the regex*)
 val UNMARK_SHIFT_THM = store_thm(
 "UNMARK_SHIFT_THM",
 ``!B R x. (UNMARK_REG (shift B R x)) = (UNMARK_REG R)``,
    Induct_on `R` >> FULL_SIMP_TAC list_ss [SHIFT_M_DEF, UNMARK_REG_DEF]
 );
 
+(* Not even shifting repetedly*)
 val UNMARK_FOLD_SHIFT_THM = store_thm(
 "UNMARK_FOLD_SHIFT_THM",
 ``!B R l. (UNMARK_REG (FOLDL (shift B) R l)) = (UNMARK_REG R)``,
-   Induct_on `l`>>
+   Induct_on `l`>>(
      FULL_SIMP_TAC list_ss [SHIFT_M_DEF, UNMARK_REG_DEF, UNMARK_SHIFT_THM]
+   )
 );
 
+(* So initial language does not change ether *)
+val LANG_UNMACK_SHIFT_THM = store_thm (
+"LANG_UNMACK_SHIFT_THM",
+``!R B h. language_of (UNMARK_REG (shift B R h)) = language_of ( UNMARK_REG R)``,
+  REWRITE_TAC [UNMARK_SHIFT_THM ]
+);
+
+(* A marked regex if empty if and only if the
+   empty word is in its initial language *)
 val LANG_OF_EMPTY_REG_THM = store_thm (
  "LANG_OF_EMPTY_REG_THM",
  ``!R. (empty R)=([] IN language_of (UNMARK_REG R))``,
@@ -428,6 +435,8 @@ val LANG_OF_EMPTY_REG_THM = store_thm (
   ASM_SIMP_TAC (list_ss ++ pred_setSimps.PRED_SET_ss) []
 );
 
+(* epmty word is in the right language of a marked regex
+   if and only if it is in a final position *)
 val LANG_OF_FINAL_REG_THM = store_thm(
 "LANG_OF_FINAL_REG_THM",
 ``!R. (final R) = [] IN r_language_of_m R``,
@@ -449,38 +458,43 @@ val LANG_OF_FINAL_REG_THM = store_thm(
     FULL_SIMP_TAC (list_ss ++ pred_setSimps.PRED_SET_ss) []
 );
 
-
-
-
+(* An marked regex with no mark set,
+   can't be in a final position     *)
 val FINAL_MARK_REG_F = store_thm(
 "FINAL_MARK_REG_F",
 ``!R. final(MARK_REG R) = F``,
   Induct >> METIS_TAC [ FINAL_M_DEF, MARK_REG_DEF]
 );
 
-
+(* If the right language of a marked regex is non empty,
+   Then a shift with the flag set to T must have been preform on it. *)
 val NON_EMPTY_RLANG_OF_UNMARKED_THM = store_thm(
 "NON_EMPTY_RLANG_OF_UNMARKED_THM",
 ``!R B h t. t IN r_language_of_m (shift B (MARK_REG R) h) ==> (B)``,
-
-Induct>>(
-   SIMP_TAC (list_ss ++ pred_setSimps.PRED_SET_ss) [FINAL_MARK_REG_F,SHIFT_M_DEF, RLANGUAGE_OF_M_DEF, MARK_REG_DEF]>>
-   TRY (METIS_TAC [])
-)>|
-[
-    REPEAT GEN_TAC>>
-    Cases_on `B /\ (a=h)`>>
-    ASM_SIMP_TAC (list_ss ++ pred_setSimps.PRED_SET_ss) [RLANGUAGE_OF_M_DEF]
-,
-    REPEAT STRIP_TAC>-(
-      METIS_TAC[]
+    Induct>>(
+        SIMP_TAC (list_ss ++ pred_setSimps.PRED_SET_ss) [FINAL_MARK_REG_F,SHIFT_M_DEF, RLANGUAGE_OF_M_DEF, MARK_REG_DEF]>>
+        TRY (METIS_TAC [])
     )>>
-    Q.PAT_X_ASSUM `!B h t. t IN r_language_of_m (shift B (MARK_REG R') h) ⇒ _` (fn x=> MP_TAC (Q.SPECL [`B/\empty(MARK_REG R)`, `h`, `t`] x))>>
-    ASM_REWRITE_TAC []>>
-    SIMP_TAC std_ss []
-]
+    REPEAT GEN_TAC >|
+    [
+        Cases_on `B /\ (a=h)`>>(
+            ASM_SIMP_TAC (list_ss ++ pred_setSimps.PRED_SET_ss) [RLANGUAGE_OF_M_DEF]
+        )
+    ,
+        REPEAT STRIP_TAC>-(
+        METIS_TAC[]
+        )>>
+        Q.PAT_X_ASSUM `!B h t. t IN r_language_of_m (shift B (MARK_REG R') h) => _`
+            (fn x=> MP_TAC (Q.SPECL [`B/\empty(MARK_REG R)`, `h`, `t`] x))>>
+        METIS_TAC []
+    ]
 );
 
+
+(* If a non empty list can be partitionsed (words) such that
+   a property P holds for every partition, then the list
+   of partitions has a first non empty elemenet for witch the P holds.
+*)
 val EVERY_FLAT_FIRST_NON_EPMTY_HEAD_THM = store_thm(
 "EVERY_FLAT_FIRST_NON_EPMTY_HEAD_THM",
 ``! words h t P. (EVERY P words) ==>
@@ -490,18 +504,18 @@ val EVERY_FLAT_FIRST_NON_EPMTY_HEAD_THM = store_thm(
     Induct>>(
          SIMP_TAC list_ss []
     )>>
-    REPEAT STRIP_TAC>>
     Cases_on `h`>>(
          FULL_SIMP_TAC list_ss []
     )>>
-    Q.EXISTS_TAC `t'`>>
-    Q.EXISTS_TAC `words`>>
-    FULL_SIMP_TAC list_ss []
+    METIS_TAC []
 );
 
 
-
-
+(*
+  A word is in the language or a regex if and only if
+  the tail of the word is in the right language of the
+  marked regex with the words head positions marked.
+*)
 val MARK_REG_SHIFT_LANG_THM1 = store_thm(
 "MARK_REG_SHIFT_LANG_THM1",
 ``!h t R. h::t IN language_of (R) = (t IN (r_language_of_m (shift T (MARK_REG R) h)))``,
@@ -592,6 +606,10 @@ STRIP_TAC>|
 ]
 );
 
+
+(* The language of a regex with only initila marks set,
+   is a subset of the language of the same regex with
+   the same initial marks set and possible other marks*)
 val MARK_UNMARK_LANG_THM = store_thm(
 "UNMARK_MARK_THM",
 ``! R t h B.  (t IN r_language_of_m (shift T (MARK_REG (UNMARK_REG R)) h)) ==>
@@ -784,9 +802,9 @@ FULL_SIMP_TAC (list_ss ++ pred_setSimps.PRED_SET_ss) [SHIFT_M_DEF, RLANGUAGE_OF_
 
 
 
-(* Repetedly shifting regex by a substring of 
-   a word in its right language puts it in a 
-   state such that the rest of the word is in 
+(* Repetedly shifting regex by a substring of
+   a word in its right language puts it in a
+   state such that the rest of the word is in
    its language *)
 val  LANG_OF_FOLD_SHIFT_MREG_THM = store_thm (
   "LANG_OF_FOLD_SHIFT_MREG_THM",
@@ -798,7 +816,7 @@ val  LANG_OF_FOLD_SHIFT_MREG_THM = store_thm (
     (
       SIMP_TAC list_ss [FOLDL]
     )>>
-    METIS_TAC [LANG_OF_SHIFT_MREG_THM2, 
+    METIS_TAC [LANG_OF_SHIFT_MREG_THM2,
                LANG_OF_SHIFT_MREG_THM1]
 );
 
@@ -859,7 +877,7 @@ val ACCEPT_M_LANGUAGE_THM = store_thm (
      ACCEPT_M_DEF,
      LANG_OF_EMPTY_REG_THM,
      UNMARK_MARK_THM,
-     LANG_OF_FINAL_REG_THM, 
+     LANG_OF_FINAL_REG_THM,
      MARK_REG_SHIFT_LANG_THM1,
      LANG_OF_FOLD_SHIFT_MREG_THM]
   )
