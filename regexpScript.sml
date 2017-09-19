@@ -665,39 +665,39 @@ val LANG_OF_SHIFT_MREG_THM1 = store_thm(
 
         (* Seq Case: *)
         REPEAT STRIP_TAC>-(
-	    METIS_TAC [APPEND]
+            METIS_TAC [APPEND]
         )>>
-	Q.PAT_X_ASSUM `! B h t. _` (fn x => MP_TAC (
-		Q.SPECL [ `(B ∧ empty R ∨ final R)`, `h`, `t`] x
-	))>>
-	METIS_TAC [APPEND, LANG_OF_EMPTY_REG_THM, LANG_OF_FINAL_REG_THM],
-	(* Rep case: *)
-	REPEAT STRIP_TAC>>
-	Q.PAT_X_ASSUM `! B h t. _` (fn x => MP_TAC (
-	    Q.SPECL [ `(B ∨ final R)`, `h`, `fstPrt`] x
-	))>>
-	ASM_REWRITE_TAC []>>
-	STRIP_TAC>|[
-	    DISJ1_TAC>>
-	    Q.EXISTS_TAC `h::fstPrt`>>
-	    Q.EXISTS_TAC `sndPrt`>>
-	    ASM_SIMP_TAC list_ss []>>
-	    METIS_TAC [],
+        Q.PAT_X_ASSUM `! B h t. _` (fn x => MP_TAC (
+                Q.SPECL [ `(B ∧ empty R ∨ final R)`, `h`, `t`] x
+        ))>>
+        METIS_TAC [APPEND, LANG_OF_EMPTY_REG_THM, LANG_OF_FINAL_REG_THM],
+        (* Rep case: *)
+        REPEAT STRIP_TAC>>
+        Q.PAT_X_ASSUM `! B h t. _` (fn x => MP_TAC (
+            Q.SPECL [ `(B ∨ final R)`, `h`, `fstPrt`] x
+        ))>>
+        ASM_REWRITE_TAC []>>
+        STRIP_TAC>|[
+            DISJ1_TAC>>
+            Q.EXISTS_TAC `h::fstPrt`>>
+            Q.EXISTS_TAC `sndPrt`>>
+            ASM_SIMP_TAC list_ss []>>
+            METIS_TAC [],
 
-	    DISJ2_TAC>>
-	    ASM_SIMP_TAC list_ss []>>
-	    Q.EXISTS_TAC `(h::fstPrt)::words`>>
-	    ASM_SIMP_TAC list_ss [],
+            DISJ2_TAC>>
+            ASM_SIMP_TAC list_ss []>>
+            Q.EXISTS_TAC `(h::fstPrt)::words`>>
+            ASM_SIMP_TAC list_ss [],
 
-	    FULL_SIMP_TAC list_ss[]>>
-	    DISJ1_TAC>>
-	    Q.EXISTS_TAC `[]`>>
-	    Q.EXISTS_TAC `h::(fstPrt++sndPrt)`>>
-	    `[] ∈ r_language_of_m R` by METIS_TAC [ LANG_OF_FINAL_REG_THM]>>
-	    FULL_SIMP_TAC list_ss []>>
-	    Q.EXISTS_TAC `(h::fstPrt)::words`>>
-	    ASM_SIMP_TAC list_ss []
-	]
+            FULL_SIMP_TAC list_ss[]>>
+            DISJ1_TAC>>
+            Q.EXISTS_TAC `[]`>>
+            Q.EXISTS_TAC `h::(fstPrt++sndPrt)`>>
+            `[] ∈ r_language_of_m R` by METIS_TAC [ LANG_OF_FINAL_REG_THM]>>
+            FULL_SIMP_TAC list_ss []>>
+            Q.EXISTS_TAC `(h::fstPrt)::words`>>
+            ASM_SIMP_TAC list_ss []
+        ]
     ]
 );
 
