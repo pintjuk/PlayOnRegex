@@ -19,7 +19,7 @@ val Regex = Datatype Q_Regex;
 (*    REGEX Semantix         *)
 (* =========================== *)
 
-val LANGUAGE_OF_def = Define
+val language_of_def = Define
   `(language_of Eps = {[]}) /\
    (language_of (Sym c) = {[c]}) /\
    (language_of (Alt a b) = (language_of a) UNION (language_of b) ) /\
@@ -53,7 +53,7 @@ val LANGUAGE_OF_REWRITE_THM = store_thm (
      EVERY (\e. e IN language_of r) words /\
      ((FLAT  words)=w))``,
 
-    SIMP_TAC (std_ss ++ pred_setSimps.PRED_SET_ss) [LANGUAGE_OF_def]
+    SIMP_TAC (std_ss ++ pred_setSimps.PRED_SET_ss) [language_of_def]
 );
 
 val LANGUAGE_OF_REWRITE_THM_NO_NIL = store_thm (
@@ -71,7 +71,7 @@ val LANGUAGE_OF_REWRITE_THM_NO_NIL = store_thm (
      EVERY (\e. e IN language_of r) words /\
      ((FLAT  words)=w))``,
 
-    SIMP_TAC (std_ss ++ pred_setSimps.PRED_SET_ss) [LANGUAGE_OF_def]>>
+    SIMP_TAC (std_ss ++ pred_setSimps.PRED_SET_ss) [language_of_def]>>
     REPEAT GEN_TAC>>
     Tactical.REVERSE EQ_TAC >- (
         METIS_TAC []
@@ -83,14 +83,14 @@ val LANGUAGE_OF_REWRITE_THM_NO_NIL = store_thm (
 
 val SanityRep = prove(
   ``[1;2;1;1] IN language_of (Rep (Alt (Sym 1) (Sym 2)))``,
-  Ho_Rewrite.REWRITE_TAC [LANGUAGE_OF_def,IN_GSPEC_IFF]>>
+  Ho_Rewrite.REWRITE_TAC [language_of_def,IN_GSPEC_IFF]>>
   Q.EXISTS_TAC `[[1];[2];[1];[1]]` >>
   SIMP_TAC list_ss []
 );
 
 val SanitySeq1 = prove(
   ``[1;2] IN language_of (Seq (Sym 1)(Sym 2))``,
-  Ho_Rewrite.REWRITE_TAC [LANGUAGE_OF_def,IN_GSPEC_IFF]>>
+  Ho_Rewrite.REWRITE_TAC [language_of_def,IN_GSPEC_IFF]>>
   REWRITE_TAC [
     SET_SPEC_CONV
       ``[1; 2] IN {fstPrt ++ sndPrt | fstPrt IN {[1]} /\ sndPrt IN {[2]}}``
@@ -105,7 +105,7 @@ val AND_FOLD_FALSE_THM = prove(
 
 val sanity_rep_nullable_thm = prove(
   ``([] IN language_of (Rep (Alt (Sym 1) (Sym 2))))``,
-  Ho_Rewrite.REWRITE_TAC [LANGUAGE_OF_def,IN_GSPEC_IFF, NOT_EXISTS_THM]>>
+  Ho_Rewrite.REWRITE_TAC [language_of_def,IN_GSPEC_IFF, NOT_EXISTS_THM]>>
   Q.EXISTS_TAC `[]`>>
   SIMP_TAC list_ss []
 );
@@ -113,7 +113,7 @@ val sanity_rep_nullable_thm = prove(
 val sanity_rep_nullable_thm = prove(
   ``!R. ([] IN language_of (Rep R))``,
   Induct>>
-  Ho_Rewrite.REWRITE_TAC [LANGUAGE_OF_def,IN_GSPEC_IFF]>>
+  Ho_Rewrite.REWRITE_TAC [language_of_def,IN_GSPEC_IFF]>>
   TRY STRIP_TAC>>
   Q.EXISTS_TAC `[]`>>
   SIMP_TAC (list_ss) []
@@ -123,17 +123,17 @@ val sanity_rep_nullable_thm = prove(
 (* Executable model of regex *)
 (* =========================== *)
 
-val SPLIT_def = Define
+val split_def = Define
   `(split []    = [([],[])]) /\
    (split (c::cs) = ([],c::cs)::(MAP (\x. (c::(FST x), SND x)) (split cs)))`;
 
 val MEM_SPLIT_APPEND_THM = store_thm(
-  "SPLIT_APPEND_THM",
+  "MEM_SPLIT_APPEND_THM",
   ``!A B. MEM (A,B) (split (A++B))``,
 
 Induct >| [
-  Cases >> SIMP_TAC list_ss [SPLIT_def],
-  ASM_SIMP_TAC (list_ss++QI_ss) [SPLIT_def, MEM_MAP]
+  Cases >> SIMP_TAC list_ss [split_def],
+  ASM_SIMP_TAC (list_ss++QI_ss) [split_def, MEM_MAP]
 ]);
 
 
@@ -144,15 +144,15 @@ val SPLIT_APPEND_THM =  store_thm(
   SIMP_TAC std_ss [boolTheory.EQ_IMP_THM, FORALL_AND_THM] >>
   (Tactical.REVERSE CONJ_TAC) >-(
     Induct >- (
-      Cases >> SIMP_TAC list_ss [SPLIT_def]
+      Cases >> SIMP_TAC list_ss [split_def]
     )>>
-    ASM_SIMP_TAC (list_ss++QI_ss) [SPLIT_def, MEM_MAP]
+    ASM_SIMP_TAC (list_ss++QI_ss) [split_def, MEM_MAP]
   )>>
   Induct>-(
-     ASM_SIMP_TAC (list_ss) [SPLIT_def]
+     ASM_SIMP_TAC (list_ss) [split_def]
   )>>
 
-  ASM_SIMP_TAC (list_ss) [SPLIT_def, MEM_MAP]>>
+  ASM_SIMP_TAC (list_ss) [split_def, MEM_MAP]>>
   REPEAT STRIP_TAC>>
   FULL_SIMP_TAC list_ss []
 );
@@ -161,7 +161,7 @@ val SPLIT_APPEND_THM =  store_thm(
 
 (* It was pritty hard to work with this definition,
    maybe i should redefine this  *)
-val PARTS_def = Define
+val parts_def = Define
   `(parts []     = [[]]) /\
    (parts (c::cs) =
      if cs = []
@@ -172,7 +172,7 @@ val PARTS_def = Define
 val PARTS_SPEC = store_thm ("PARTS_SPEC",
   ``!(l:'a list) ll. MEM ll (parts l) <=> (~(MEM [] ll) /\ (FLAT ll = l))``,
 Induct >- (
-  SIMP_TAC list_ss [PARTS_def, FLAT_EQ_NIL, EVERY_MEM] >>
+  SIMP_TAC list_ss [parts_def, FLAT_EQ_NIL, EVERY_MEM] >>
   Cases_on `ll` >| [
     SIMP_TAC list_ss [],
 
@@ -181,7 +181,7 @@ Induct >- (
 ) >>
 CONV_TAC (RENAME_VARS_CONV ["c"]) >>
 REPEAT GEN_TAC >>
-ASM_SIMP_TAC (list_ss++boolSimps.LIFT_COND_ss) [PARTS_def,
+ASM_SIMP_TAC (list_ss++boolSimps.LIFT_COND_ss) [parts_def,
   MEM_FLAT, MEM_MAP, PULL_EXISTS] >>
 Cases_on `ll` >> SIMP_TAC list_ss [] >>
 rename1 `cl ++ FLAT ll' = [c:'a]` >>
@@ -189,7 +189,7 @@ Cases_on `cl` >> SIMP_TAC list_ss [] >>
 SIMP_TAC (std_ss++boolSimps.EQUIV_EXTRACT_ss) [] >>
 rename1 `(cl' = ([]:'a list)) /\ (c' = (c:'a))` >>
 Cases_on `l` >> SIMP_TAC list_ss [] >> REPEAT STRIP_TAC >> (
-  REPEAT BasicProvers.VAR_EQ_TAC >> FULL_SIMP_TAC list_ss [PARTS_def]
+  REPEAT BasicProvers.VAR_EQ_TAC >> FULL_SIMP_TAC list_ss [parts_def]
 ) >>
 rename1 `FLAT _ = (c2:'a)::cs` >>
 EQ_TAC >> STRIP_TAC >> REPEAT BasicProvers.VAR_EQ_TAC >| [
@@ -205,7 +205,7 @@ EQ_TAC >> STRIP_TAC >> REPEAT BasicProvers.VAR_EQ_TAC >| [
 val PARTS_EMPTY_THM = store_thm(
   "PARTS_EMPTY_THM",
   ``!e. (e =[]) = (MEM (e) (parts ([])))``,
-    ASM_SIMP_TAC list_ss [PARTS_def]
+    ASM_SIMP_TAC list_ss [parts_def]
 );
 
 val PARTS_EMPTY_THM2 = store_thm(
@@ -227,7 +227,7 @@ val PARTS_SINGLE_THM = store_thm(
   "PARTS_SINGLE_THM",
   ``!e x. (e =[[x]]) = (MEM (e) (parts [x]))``,
 
-    ASM_SIMP_TAC list_ss [PARTS_def]
+    ASM_SIMP_TAC list_ss [parts_def]
 );
 
 val PARTS_MEM_HEAD_THM = store_thm(
@@ -247,7 +247,7 @@ val PARTS_MEM_APPEND_THM1 = store_thm(
   SIMP_TAC list_ss [PARTS_SPEC]
 );
 
-val ACCEPT_def = Define
+val accept_def = Define
   `(accept Eps       u = (u=[]))/\
    (accept (Sym c)   u = (u=[c]))/\
    (accept (Alt p q) u = (accept p u \/ accept q u))/\
@@ -275,7 +275,7 @@ val LANGUAGE_ACCEPTED_THM = store_thm(
   ``!R x. x IN language_of R = accept R x``,
 
   Induct_on `R` >> (
-            ASM_SIMP_TAC std_ss [LANGUAGE_OF_REWRITE_THM_NO_NIL, ACCEPT_def, EXISTS_MEM, SPLIT_APPEND_THM, pairTheory.EXISTS_PROD, PARTS_SPEC] >>
+            ASM_SIMP_TAC std_ss [LANGUAGE_OF_REWRITE_THM_NO_NIL, accept_def, EXISTS_MEM, SPLIT_APPEND_THM, pairTheory.EXISTS_PROD, PARTS_SPEC] >>
             METIS_TAC[]
   ));
 
@@ -431,89 +431,77 @@ val LANG_OF_SHIFT = prove(
      t IN r_language_of_m (shift B R h) =
      h::t IN r_language_of_m R \/ B /\ h::t IN language_of (unmark R)``,
 
-Induct >>
-(
-    FULL_SIMP_TAC (list_ss++boolSimps.EQUIV_EXTRACT_ss)
-                  [ PULL_EXISTS, UNMARK_SHIFT_THM, shift_def, IN_R_LANGUAGE_OF_M,
-                    LANGUAGE_OF_REWRITE_THM_NO_NIL, unmark_def, LANG_OF_EMPTY_REG_THM,
-                    LANG_OF_FINAL_REG_THM]>>
-REPEAT STRIP_TAC>> EQ_TAC>> REPEAT STRIP_TAC
-)>|
-[
-
-    DISJ2_TAC>>
-    Q.EXISTS_TAC `[]`>>
-    Q.EXISTS_TAC `h::t`>>
-    ASM_SIMP_TAC list_ss [],
-
-    DISJ1_TAC>>
-    Q.EXISTS_TAC `[]`>>
-    Q.EXISTS_TAC `h::t`>>
-    ASM_SIMP_TAC list_ss [],
-
-
-    DISJ1_TAC>>
-    Q.EXISTS_TAC `h::w1`>>
-    Q.EXISTS_TAC `w2`>>
-    ASM_SIMP_TAC list_ss [],
-
-    DISJ2_TAC>>
-    Q.EXISTS_TAC `h::w1`>>
-    Q.EXISTS_TAC `w2`>>
-    FULL_SIMP_TAC list_ss [],
-
-    Cases_on `w1`>>(
-    FULL_SIMP_TAC list_ss []
-    )>>
-    METIS_TAC [APPEND],
-
-    Cases_on `fstPrt`>>(
-    FULL_SIMP_TAC list_ss []
-    )>>
-    METIS_TAC [APPEND],
-
-    (* Rep Case*)
-    DISJ1_TAC>>
-    Q.EXISTS_TAC `h::w1`>>
-    Q.EXISTS_TAC `words`>>
-    METIS_TAC [APPEND],
-
-    DISJ2_TAC>>
-    Q.EXISTS_TAC `(h::w1)::words`>>
-    FULL_SIMP_TAC list_ss [],
-
-    DISJ1_TAC>>
-    Q.EXISTS_TAC `[]`>>
-    Q.EXISTS_TAC `(h::w1)::words`>>
-    FULL_SIMP_TAC list_ss [],
-
-    Cases_on `w1` >|[
-        FULL_SIMP_TAC list_ss []>>
-        `?c1 c2. words = (h::c1)::c2` by (
-            Cases_on `words`>>
-            FULL_SIMP_TAC list_ss []>>
-            Cases_on `h'`>>
-            FULL_SIMP_TAC list_ss []
+    Induct >>(
+        FULL_SIMP_TAC (list_ss++boolSimps.EQUIV_EXTRACT_ss)
+                    [ PULL_EXISTS, UNMARK_SHIFT_THM, shift_def, IN_R_LANGUAGE_OF_M,
+                        LANGUAGE_OF_REWRITE_THM_NO_NIL, unmark_def,
+                        LANG_OF_EMPTY_REG_THM, LANG_OF_FINAL_REG_THM])>|[
+        (* Seq case: *)
+        REPEAT STRIP_TAC>>
+        EQ_TAC>-(
+            METIS_TAC [APPEND]
         )>>
-        Q.EXISTS_TAC `c1`>>
-        Q.EXISTS_TAC `c2`>>
-        FULL_SIMP_TAC list_ss [],
+        STRIP_TAC>>(
+            rename1 `h::t = w1++w2` >>
+            Cases_on `w1`>>(
+                FULL_SIMP_TAC list_ss []
+            )>>
+            METIS_TAC [APPEND]
+        ),
 
-        Q.EXISTS_TAC `t'`>>
-        Q.EXISTS_TAC `words`>>
-        FULL_SIMP_TAC list_ss []
-    ],
+        (* Rep case: *)
+        REPEAT STRIP_TAC>>
+        EQ_TAC>|[
+            REPEAT STRIP_TAC>-(
+                METIS_TAC [APPEND]
+            )>>
+            rename1 `t = w1++FLAT words` >>
+            rename1 `h::w1 IN language_of(unmark R)` >|
+            [
+                DISJ2_TAC>>
+                Q.EXISTS_TAC `(h::w1)::words`>>
+                ASM_SIMP_TAC list_ss [],
 
+                rename1 `t = w1++FLAT words` >>
+                rename1 `h::w1 IN language_of(unmark R)` >>
+                DISJ1_TAC>>
+                Q.EXISTS_TAC `[]`>>
+                Q.EXISTS_TAC `(h::w1)::words`>>
+                FULL_SIMP_TAC list_ss []
+            ],
 
-    `?c1 c2. words = (h::c1)::c2` by (
-        Cases_on `words`>>
-        FULL_SIMP_TAC list_ss []>>
-        Cases_on `h'`>>
-        FULL_SIMP_TAC list_ss []
-    )>>
-    Q.EXISTS_TAC `c1`>>
-    Q.EXISTS_TAC `c2`>>
-    FULL_SIMP_TAC list_ss []
+            REPEAT STRIP_TAC>|[
+                (* When w1=[] in the fist case then
+                   the following cases are equal *)
+                rename1 `h::t = w1++FLAT words` >>
+                Tactical.REVERSE(Cases_on `w1`) >- (
+                    Q.EXISTS_TAC `t'`>>
+                    Q.EXISTS_TAC `words`>>
+                    FULL_SIMP_TAC list_ss []
+                )>>
+                FULL_SIMP_TAC list_ss []>>
+                `?c1 c2. words = (h::c1)::c2` by (
+                    Cases_on `words`>>
+                    FULL_SIMP_TAC list_ss []>>
+                    Cases_on `h'`>>
+                    FULL_SIMP_TAC list_ss []
+                )>>
+                Q.EXISTS_TAC `c1`>>
+                Q.EXISTS_TAC `c2`>>
+                FULL_SIMP_TAC list_ss [],
+
+                `?c1 c2. words = (h::c1)::c2` by (
+                    Cases_on `words`>>
+                    FULL_SIMP_TAC list_ss []>>
+                    Cases_on `h'`>>
+                    FULL_SIMP_TAC list_ss []
+                )>>
+                Q.EXISTS_TAC `c1`>>
+                Q.EXISTS_TAC `c2`>>
+                FULL_SIMP_TAC list_ss []
+
+           ]
+        ]
 ]);
 
 
@@ -566,8 +554,8 @@ emitML (!Globals.emitMLDir) ("poregex", [
                          MLSIG "Type 'a list = 'a listML.list",
                          OPEN ["list"],
                          DATATYPE Q_Regex,
-                         DEFN SPLIT_def,
-                         DEFN PARTS_def,
-                         DEFN ACCEPT_def
+                         DEFN split_def,
+                         DEFN parts_def,
+                         DEFN accept_def
                            ]);
 val _ = export_theory();
