@@ -8,3 +8,4 @@
 **/*.ui
 **/*.uo
 regexpTheory.sml
+/.Holmakefile.swp

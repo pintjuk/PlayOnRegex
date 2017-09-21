@@ -1,2 +1,10 @@
+INCLUDES = $(HOLDIR)/src/emit/ML
+
 selftest.exe: selftest.uo regexpTheory.uo
 	$(HOLMOSMLC) -o $@ $<
+
+$(HOLDIR)/src/emit/ML/regexpML.ui: $(HOLDIR)/src/emit/ML/regexpML.sml
+	cd $(HOLDIR)/src/emit/ML; Holmake
+
+test: selftest.exe $(HOLDIR)/src/emit/ML/regexpML.ui
+	echo "running selftest"; ./selftest.exe
