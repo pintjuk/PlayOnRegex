@@ -5,7 +5,7 @@ open EmitML basis_emitTheory
 val _ = new_theory "regexp"
 
 (* =========================== *)
-(*    DEFINITION OF REGEX    *)
+(*    DEFINITION OF REGEX      *)
 (* =========================== *)
 val Q_Regex = `Reg = Eps
                    | Sym 'a
@@ -16,7 +16,7 @@ val Q_Regex = `Reg = Eps
 val Regex = Datatype Q_Regex;
 
 (* =========================== *)
-(*    REGEX Semantix         *)
+(*    REGEX Semantix           *)
 (* =========================== *)
 
 val language_of_def = Define
@@ -120,7 +120,7 @@ val sanity_rep_nullable_thm = prove(
 );
 
 (* =========================== *)
-(* Executable model of regex *)
+(* Executable model of regex   *)
 (* =========================== *)
 
 val split_def = Define
@@ -265,8 +265,8 @@ val accept_def = Define
 
 
 
-(* ============================================================ *)
-(*  Equaivalance of semantics and executable model         *)
+(* ============================================================= *)
+(*        Equaivalance of semantics and executable model         *)
 (* ============================================================= *)
 
 
@@ -281,7 +281,7 @@ val LANGUAGE_ACCEPTED_THM = store_thm(
 
 
  (* ======================================= *)
-(*            Marked Regex               *)
+ (*              Marked Regex               *)
  (* ======================================= *)
 val Q_MReg = `MReg = MEps
                           | MSym bool 'a
@@ -547,15 +547,20 @@ val ACCEPT_M_LANGUAGE_THM = store_thm (
 );
 
  (* ======================================= *)
-(*            Code generation            *)
+ (*            Code generation              *)
  (* ======================================= *)
 
-emitML (!Globals.emitMLDir) ("poregex", [
-                         MLSIG "Type 'a list = 'a listML.list",
+emitML (!Globals.emitMLDir) ("regexp", [
                          OPEN ["list"],
                          DATATYPE Q_Regex,
+                         DATATYPE Q_MReg,
                          DEFN split_def,
                          DEFN parts_def,
-                         DEFN accept_def
+                         DEFN accept_def,
+                         DEFN mark_def,
+                         DEFN empty_def,
+                         DEFN final_def,
+                         DEFN shift_def,
+                         DEFN accept_m_def
                            ]);
 val _ = export_theory();
