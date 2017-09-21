@@ -523,9 +523,9 @@ val  LANG_OF_FOLD_SHIFT = store_thm (
 );
 
 (*******************************************)
-(* accept_m of marked regex accepts    *)
-(* exactly thoughts words in the      *)
-(* langugae of the unmarked regex     *)
+(* accept_m of marked regex accepts        *)
+(* exactly thoughts words in the           *)
+(* langugae of the unmarked regex          *)
 (*******************************************)
 
 
