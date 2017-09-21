@@ -1,6 +1,5 @@
 .HOLMK/**
 .hollogs/**
-*.sig
 *.exe
 **/#*#
 **/.#*
@@ -8,4 +7,5 @@
 **/*.ui
 **/*.uo
 regexpTheory.sml
+regexpTheory.sig
 /.Holmakefile.swp
