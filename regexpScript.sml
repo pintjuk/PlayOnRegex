@@ -275,7 +275,10 @@ val LANGUAGE_ACCEPTED_THM = store_thm(
   ``!R x. x IN language_of R = accept R x``,
 
   Induct_on `R` >> (
-            ASM_SIMP_TAC std_ss [LANGUAGE_OF_REWRITE_THM_NO_NIL, accept_def, EXISTS_MEM, SPLIT_APPEND_THM, pairTheory.EXISTS_PROD, PARTS_SPEC] >>
+            ASM_SIMP_TAC std_ss [
+                LANGUAGE_OF_REWRITE_THM_NO_NIL, accept_def, 
+                EXISTS_MEM, SPLIT_APPEND_THM, pairTheory.EXISTS_PROD, 
+                PARTS_SPEC] >>
             METIS_TAC[]
   ));
 
