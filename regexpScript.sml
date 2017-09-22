@@ -5,7 +5,7 @@ open EmitML basis_emitTheory
 val _ = new_theory "regexp"
 
 (* =========================== *)
-(*    DEFINITION OF REGEX      *)
+(*    DEFINITION OF REGEXP     *)
 (* =========================== *)
 val Q_Regex = `Reg = Eps
                    | Sym 'a
@@ -16,7 +16,7 @@ val Q_Regex = `Reg = Eps
 val Regex = Datatype Q_Regex;
 
 (* =========================== *)
-(*    REGEX Semantix           *)
+(*    REGEXP Semantics         *)
 (* =========================== *)
 
 val language_of_def = Define
@@ -96,11 +96,6 @@ val SanitySeq1 = prove(
       ``[1; 2] IN {fstPrt ++ sndPrt | fstPrt IN {[1]} /\ sndPrt IN {[2]}}``
   ]>>
   SIMP_TAC list_ss []
-);
-
-val AND_FOLD_FALSE_THM = prove(
-  ``!a. ~(FOLDL $/\ F a)``,
-  Induct >> ASM_SIMP_TAC std_ss [FOLDL]
 );
 
 val sanity_rep_nullable_thm = prove(
@@ -266,7 +261,7 @@ val accept_def = Define
 
 
 (* ============================================================= *)
-(*        Equaivalance of semantics and executable model         *)
+(*        Equivalence of semantics and executable model          *)
 (* ============================================================= *)
 
 
