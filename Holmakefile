@@ -1,13 +1,9 @@
-INCLUDES = $(HOLDIR)/src/emit/ML
-
-all: selftest.exe regexp.ui test
+all: selftest.exe regexp.uo Benchmark.uo test 
 selftest.exe: selftest.uo regexpTheory.uo
 	$(HOLMOSMLC) -o $@ $<
 
-$(HOLDIR)/src/emit/ML/regexpML.ui: $(HOLDIR)/src/emit/ML/regexpML.sml
-	cd $(HOLDIR)/src/emit/ML; Holmake
 
-test: selftest.exe $(HOLDIR)/src/emit/ML/regexpML.ui regexp.uo
+test: selftest.exe regexpML.ui regexp.uo
 	echo "running selftest"; ./selftest.exe
 
 .PHONY: all test

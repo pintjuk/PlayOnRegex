@@ -548,7 +548,7 @@ val ACCEPT_M_LANGUAGE_THM = store_thm (
  (*            Code generation              *)
  (* ======================================= *)
 
-emitML (!Globals.emitMLDir) ("regexp", [
+emitML ("") ("regexp", [
                          OPEN ["list"],
                          DATATYPE Q_Regex,
                          DATATYPE Q_MReg,
