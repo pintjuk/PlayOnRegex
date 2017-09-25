@@ -1,9 +1,10 @@
+INCLUDES = $(HOLDIR)/src/emit/ML
 all: selftest.exe regexp.uo Benchmark.uo test 
 selftest.exe: selftest.uo regexpTheory.uo
 	$(HOLMOSMLC) -o $@ $<
 
 
-test: selftest.exe regexpML.ui regexp.uo
+test: selftest.exe regexpML.uo regexp.uo
 	echo "running selftest"; ./selftest.exe
 
 .PHONY: all test
