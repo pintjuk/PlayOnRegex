@@ -1,0 +1,135 @@
+Runing regresion tests against regexpMatch.sml
+using regex:  ((a|b)*c(a|b)*c)*(a|b)*
+  User: 0.000, System: 0.000, Total: 0.000
+Succesfully ran 40 cases!
+
+  User: 0.000, System: 0.000, Total: 0.000
+
+  Scaleability tests1:
+  ===================
+
+  (regexpMatch.sml):
+  ------------------
+matching (a|eps)^n(a)^n  against  a^n
+n: time(s)
+1: 3.308
+11: 0.000
+21: 0.008
+31: 0.064
+41: 0.192
+51: 0.448
+61: 0.896
+71: 1.664
+81: 2.784
+91: 4.768
+101: 7.296
+111: 11.204
+121: 17.632
+
+  User: 23.628, System: 0.544, Total: 24.172
+
+  Marked regex implementation:
+  ---------------------------
+matching (a|eps)^n(a)^n  against  a^n
+
+n: time(s)
+1: 24.172
+11: 0.000
+21: 0.000
+31: 0.000
+41: 0.000
+51: 0.000
+61: 0.000
+71: 0.000
+81: 0.000
+91: 0.000
+101: 0.000
+111: 0.000
+121: 0.004
+
+  User: 0.000, System: 0.000, Total: 0.000
+
+  Non Marked regex implementation:
+  --------------------------------
+  matching (a|eps)^n(a)^n  against  a^n
+
+n: time(s)
+1: 0.000
+11: 0.000
+21: 0.000
+31: 0.000
+41: 0.000
+51: 0.000
+61: 0.000
+71: 0.000
+81: 0.000
+91: 0.004
+101: 0.000
+111: 0.004
+121: 0.000
+
+  User: 0.016, System: 0.004, Total: 0.020
+
+  Scaleability tests 2:
+  =====================
+
+  (regexpMatch.sml):
+  ------------------
+  matching ((a|b)*c(a|b)*c)*(a|b)*
+  against  string of length n 
+n: time(s)
+6: 1.076
+20006: 0.000
+40006: 0.000
+60006: 0.000
+80006: 0.000
+100006: 0.004
+120006: 0.000
+140006: 0.000
+160006: 0.000
+180006: 0.000
+200006: 0.004
+220006: 0.000
+240006: 0.000
+260006: 0.000
+280006: 0.004
+
+  User: 0.000, System: 0.000, Total: 0.000
+
+  Marked regex implementation:
+  ---------------------------
+  matching ((a|b)*c(a|b)*c)*(a|b)*
+  against  string of length n 
+
+n: time(s)
+6: 0.956
+20006: 0.000
+40006: 0.008
+60006: 0.016
+80006: 0.016
+100006: 0.024
+120006: 0.028
+140006: 0.040
+160006: 0.040
+180006: 0.048
+200006: 0.060
+220006: 0.060
+240006: 0.076
+260006: 0.068
+280006: 0.080
+
+  User: 0.092, System: 0.000, Total: 0.092
+
+  Non Marked regex implementation:
+  --------------------------------
+  matching ((a|b)*c(a|b)*c)*(a|b)*
+  against  string of length n 
+
+n: time(s)
+1: 0.092
+6: 0.000
+11: 0.000
+16: 0.000
+21: 0.184
+
+  User: 6.752, System: 0.444, Total: 7.196

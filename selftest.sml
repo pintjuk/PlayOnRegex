@@ -125,7 +125,7 @@ in
 )
 end
 
-val n_max=30;
+val n_max=130;
 val n_max2=300000;
 val num_regre_tests=40;
 runTests
